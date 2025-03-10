@@ -15,4 +15,8 @@ Auth::routes();
 
 Route::middleware('auth')->group(function () {
     Route::resource('todolists', TodoListController::class);
+    Route::resource('todolists', TodoListController::class)->middleware('auth');
 });
+
+
+

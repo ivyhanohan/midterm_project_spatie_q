@@ -1,11 +1,12 @@
 <?php
 
+
 namespace Database\Seeders;
 
 use App\Models\User;
 use Spatie\Permission\Models\Role;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Permission;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,31 +15,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Check and create roles if they don’t exist
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $dataEntry = Role::firstOrCreate(['name' => 'data_entry']);
 
-    //     User::factory()->create([
-    //         'name' => 'Test User',
-    //         'email' => 'test@example.com',
-    //     ]);
-    // }
-      // Create Roles
-      $admin = Role::create(['name' => 'admin']);
-      $dataEntry = Role::create(['name' => 'data-entry']);
+        // Create an Admin User
+        $adminUser = User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        $adminUser->assignRole($admin);
 
-      // Create an Admin User
-      $adminUser = User::factory()->create([
-          'name' => 'Admin User',
-          'email' => 'admin@example.com',
-          'password' => bcrypt('password'),
-      ]);
-      $adminUser->assignRole($admin);
+        // Create a Data Entry User
+        $dataEntryUser = User::factory()->create([
+            'name' => 'Data Entry User',
+            'email' => 'user@example.com',
+            'password' => bcrypt('password'),
+        ]);
+        $dataEntryUser->assignRole($dataEntry);
 
-      // Create a Data Entry User
-      $dataEntryUser = User::factory()->create([
-          'name' => 'Data Entry User',
-          'email' => 'user@example.com',
-          'password' => bcrypt('password'),
-      ]);
-      $dataEntryUser->assignRole($dataEntry);
-}
+        // Call other seeders
+        $this->call(TodoListSeeder::class);
+    }
 }
